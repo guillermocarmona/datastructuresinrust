@@ -1,26 +1,37 @@
-//TODO: Add partition method
+pub fn quick_sort<T: Ord + Clone>(arr: Vec<T>) -> Vec<T> {
+    let mut new_arr = arr.clone();
 
-pub fn quick_sort<T: Ord + Clone>(mut arr: Vec<T>) -> Vec<T> {
-    let n = arr.len();
-    recursion_quick_sort(&mut arr, 0, n-1)
+    let n = new_arr.len().saturating_sub(1);
+
+    quick_recursive(&mut new_arr, 0, n);
+
+    new_arr
 }
 
-fn recursion_quick_sort<T: Ord + Clone>(mut arr: &mut Vec<T>, low: usize, high: usize) -> Vec<T> {
-    if low >= high { return arr.to_vec() }
+fn quick_recursive<T: Ord + Clone>(arr: &mut Vec<T>, low: usize, high: usize) {
+    if low >= high {
+        return;
+    }
 
-    let pivot = arr[high];
+    let index = partition(arr, low, high);
 
-    let mut i = low.clone();
+    quick_recursive(arr, low, index.saturating_sub(1));
+    quick_recursive(arr, index + 1, high);
+}
 
-    for j in low..high {
-        if arr[j] < pivot {
-            i = i + 1;
-            arr.swap(i, j);
+fn partition<T: Ord + Clone>(arr: &mut Vec<T>, low: usize, high: usize) -> usize {
+    let pivot = arr[high].clone();
+
+    let mut index: usize = low;
+
+    for i in low..high {
+        if &arr[i] < &pivot {
+            arr.swap(i, index);
+            index += 1;
         }
     }
 
-    arr = recursion_quick_sort(&mut arr, low, i);
-    arr = recursion_quick_sort(&mut arr, i+1, high);
-    
-    arr.to_vec()
+    arr.swap(index, high);
+
+    index
 }
